@@ -3,10 +3,12 @@
     <div class="container">
       <div class="theHeader__inner">
         <h1>{{ title }}</h1>
-        <div>
-          <input class="theHeader__input" type="text" :placeholder="placeHolderText" v-model="inputValue" @keydown.enter="addNewTask(inputValue)">
-          <the-button color="theButton__header" @action="addNewTask(inputValue)">add new task</the-button>
-        </div>
+        <form @submit.prevent="addNewTask">
+          <input class="theHeader__input" :class="{theHeader__input_error: error.placeholder}"
+                 type="text" :placeholder="error.placeholder ? error.placeholder : placeHolderText"
+                 v-model="inputValue">
+          <the-button color="theButton__header">add new task</the-button>
+        </form>
       </div>
     </div>
   </div>
@@ -29,14 +31,22 @@ export default {
     return {
       title: 'ToDo List',
       placeHolderText: 'New Task',
-      inputValue: ''
+      inputValue: '',
+      error: {
+        placeholder: null
+      }
     }
   },
 
   methods: {
-    addNewTask (value) {
-      this.$emit('add-new-task', value)
-      this.inputValue = ''
+    addNewTask () {
+      if (this.inputValue.length) {
+        this.error.placeholder = null
+        this.$emit('add-new-task', this.inputValue)
+        this.inputValue = ''
+      } else {
+        this.error.placeholder = 'Введите название задачи'
+      }
     }
   },
 
@@ -65,11 +75,6 @@ h1 {
   align-items: center;
 }
 
-.theHeader__inner > div {
-  display: flex;
-  align-items: center;
-}
-
 .theHeader__input {
   margin-right: 20px;
   padding-left: 15px;
@@ -81,4 +86,8 @@ h1 {
   font-size: 20px;
   color: #232426;
 }
+
+.theHeader__input_error::-moz-placeholder { color: #fb6221; }
+.theHeader__input_error::-webkit-input-placeholder { color: #fb7221; }
+
 </style>
