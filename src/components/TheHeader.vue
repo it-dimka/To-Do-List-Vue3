@@ -3,7 +3,7 @@
     <div class="container">
       <div class="theHeader__inner">
         <h1>{{ title }}</h1>
-        <form @submit.prevent="addNewTask">
+        <form @submit.prevent="createTask">
           <input class="theHeader__input" :class="{theHeader__input_error: error.placeholder}"
                  type="text" :placeholder="error.placeholder ? error.placeholder : placeHolderText"
                  v-model="inputValue">
@@ -18,11 +18,12 @@
 
 export default {
   emits: {
-    'add-new-task' (value) {
+    'create-task' (value) {
       if (value) {
         return true
+      } else {
+        console.warn('Not value in "create-task" emit')
       }
-      console.warn('Not value in "add-new-task" emit')
     }
   },
 
@@ -38,10 +39,10 @@ export default {
   },
 
   methods: {
-    addNewTask () {
+    createTask () {
       if (this.inputValue.length) {
         this.error.placeholder = null
-        this.$emit('add-new-task', this.inputValue)
+        this.$emit('create-task', this.inputValue)
         this.inputValue = ''
       } else {
         this.error.placeholder = 'Введите название задачи'

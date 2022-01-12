@@ -7,11 +7,11 @@
     </div>
 
     <div class="task__text" v-if="isTaskOpen">
-      <input class="task__descr" type="text"
+      <input class="task__description" type="text"
              v-if="!isDescription"
              :placeholder="placeholderString"
              v-model="inputValue"
-             @keydown.enter="addDescr(id, inputValue)">
+             @keydown.enter="addDescription(id, inputValue)">
       <p v-else>{{ id }}: {{ isDescription }}</p>
     </div>
 
@@ -52,17 +52,19 @@ export default {
     'done-task' (id) {
       if (id) {
         return true
+      } else {
+        console.warn('No id in "done-tusk" emit')
+        return false
       }
-      console.warn('No id in "done-tusk" emit')
-      return false
     },
 
-    'add-descr' (str) {
+    'add-description' (str) {
       if (str) {
         return true
+      } else {
+        console.warn('No value in "add-description" emit')
+        return false
       }
-      console.warn('No value in "add-descr" emit')
-      return false
     }
   },
 
@@ -80,9 +82,9 @@ export default {
       this.isTaskOpen = !this.isTaskOpen
     },
 
-    addDescr (id, str) {
+    addDescription (id, str) {
       this.isDescription = this.inputValue
-      this.$emit('add-descr', id, str)
+      this.$emit('add-description', id, str)
     }
   }
 
@@ -108,7 +110,7 @@ h3 {
   max-width: 72%;
 }
 
-.task__descr {
+.task__description {
   width: 60%;
   padding: 5px 0 5px 15px;
   border: none;

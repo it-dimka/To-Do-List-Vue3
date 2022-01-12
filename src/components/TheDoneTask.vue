@@ -12,6 +12,24 @@
 
 <script>
 export default {
+  emits: {
+    'remove-task' (id) {
+      if (id) {
+        return true
+      } else {
+        console.warn('No id in "remove-tusk" emit')
+        return false
+      }
+    },
+    'cancel' (id) {
+      if (id) {
+        return true
+      } else {
+        console.warn('No id in "cancel" emit')
+        return false
+      }
+    }
+  },
   props: {
     id: {
       type: Number,
@@ -26,22 +44,6 @@ export default {
     idx: {
       type: Number,
       required: true
-    }
-  },
-  emits: {
-    'remove-task' (id) {
-      if (id) {
-        return true
-      }
-      console.warn('No id in "remove-tusk" emit')
-      return false
-    },
-    'cancel' (id) {
-      if (id) {
-        return true
-      }
-      console.warn('No id in "cancel" emit')
-      return false
     }
   }
 }

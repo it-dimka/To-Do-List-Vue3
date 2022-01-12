@@ -1,6 +1,6 @@
 <template>
   <the-header
-    @add-new-task="createTask"
+    @create-task="createTask"
   ></the-header>
 
   <div class="container">
@@ -17,7 +17,7 @@
                 :description="task.description"
                 :is-open="task.isOpen"
                 @done-task="doneTask"
-                @add-descr="addDescription"
+                @add-description="addDescription"
       ></the-task>
     </div>
 
@@ -56,11 +56,12 @@ export default {
 
   methods: {
     createTask (task) {
-      const obj = {}
-      obj.id = +('1000' + this.id++)
-      obj.title = task
-      obj.description = ''
-      obj.isOpen = false
+      const obj = {
+        id: Number(('1000' + this.id++)),
+        title: task,
+        description: '',
+        isOpen: false
+      }
       this.taskList.push(obj)
     },
 
