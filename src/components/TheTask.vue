@@ -3,7 +3,7 @@
     <div class="task__card">
 
       <h3 @click="openTask()">{{ idx + 1 }}. {{ title }}</h3>
-      <the-button color="theButton__done" @action="$emit('done-task', id)">завершить</the-button>
+      <button class="btn btn__done" @click="$emit('done-task', id)">завершить</button>
     </div>
 
     <div class="task__text" v-if="isTaskOpen">
@@ -19,8 +19,6 @@
 </template>
 
 <script>
-import TheButton from '@/components/TheButton'
-
 export default {
   props: {
     id: {
@@ -86,10 +84,6 @@ export default {
       this.isDescription = this.inputValue
       this.$emit('add-descr', id, str)
     }
-  },
-
-  components: {
-    TheButton
   }
 
 }

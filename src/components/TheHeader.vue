@@ -7,7 +7,7 @@
           <input class="theHeader__input" :class="{theHeader__input_error: error.placeholder}"
                  type="text" :placeholder="error.placeholder ? error.placeholder : placeHolderText"
                  v-model="inputValue">
-          <the-button color="theButton__header">add new task</the-button>
+          <button class="btn btn__header">add new task</button>
         </form>
       </div>
     </div>
@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import TheButton from '@/components/TheButton'
 
 export default {
   emits: {
@@ -48,11 +47,8 @@ export default {
         this.error.placeholder = 'Введите название задачи'
       }
     }
-  },
-
-  components: {
-    TheButton
   }
+
 }
 </script>
 

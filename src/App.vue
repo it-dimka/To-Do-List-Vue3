@@ -1,13 +1,13 @@
 <template>
   <the-header
-    @add-new-task="addNewTask"
+    @add-new-task="createTask"
   ></the-header>
 
   <div class="container">
     <div class="card">
       <div class="card__title">
-      <h2>{{ taskListTitle ? 'Список задач:' : 'Список задач пуст'}}</h2>
-      <span v-if="taskRate" class="rate">{{ getZero(taskRate) }}</span>
+      <h2>{{ numberOfTasks ? 'Список задач:' : 'Список задач пуст'}}</h2>
+      <span v-if="numberOfTasks" class="rate">{{ getZero(numberOfTasks) }}</span>
       </div>
       <the-task v-for="(task, idx) in taskList"
                 :key="task.id"
@@ -21,12 +21,12 @@
       ></the-task>
     </div>
 
-    <div class="card" v-if="doneList.length">
+    <div class="card" v-if="numberOfDoneTasks">
       <div class="card__title">
         <h2>Выполненые задачи:</h2>
-        <span class="rate">{{ getZero(doneRate) }}</span>
+        <span class="rate">{{ getZero(numberOfDoneTasks) }}</span>
       </div>
-      <the-done-task v-for="(task, idx) in doneList"
+      <the-done-task v-for="(task, idx) in doneTaskList"
                      :key="task.id"
                      :idx="idx"
                      :id="task.id"
@@ -50,30 +50,25 @@ export default {
     return {
       id: 1,
       taskList: [],
-      doneList: [],
-      taskRate: 0,
-      doneRate: 0
+      doneTaskList: []
     }
   },
 
   methods: {
-    addNewTask (task) {
+    createTask (task) {
       const obj = {}
       obj.id = +('1000' + this.id++)
       obj.title = task
       obj.description = ''
       obj.isOpen = false
       this.taskList.push(obj)
-      this.taskRate++
     },
 
     doneTask (id) {
-      this.taskRate--
-      this.doneRate++
       this.taskList.forEach((item, idx) => {
         if (item.id === id) {
           const task = this.taskList.splice(idx, 1)
-          this.doneList.push(task[0])
+          this.doneTaskList.push(task[0])
         }
       })
     },
@@ -87,20 +82,17 @@ export default {
     },
 
     removeTask (id) {
-      this.doneRate--
-      this.doneList.forEach((item, idx) => {
+      this.doneTaskList.forEach((item, idx) => {
         if (item.id === id) {
-          this.doneList.splice(idx, 1)
+          this.doneTaskList.splice(idx, 1)
         }
       })
     },
 
     cancelDone (id) {
-      this.doneRate--
-      this.taskRate++
-      this.doneList.forEach((item, idx) => {
+      this.doneTaskList.forEach((item, idx) => {
         if (item.id === id) {
-          const task = this.doneList.splice(idx, 1)
+          const task = this.doneTaskList.splice(idx, 1)
           this.taskList.push(task[0])
         }
       })
@@ -113,8 +105,12 @@ export default {
   },
 
   computed: {
-    taskListTitle () {
+    numberOfTasks () {
       return this.taskList.length
+    },
+
+    numberOfDoneTasks () {
+      return this.doneTaskList.length
     }
   },
 

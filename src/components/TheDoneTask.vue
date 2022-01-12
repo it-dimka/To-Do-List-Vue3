@@ -3,16 +3,14 @@
     <div class="task__card">
       <h3>{{ idx + 1 }}. {{ title }}</h3>
       <div>
-        <the-button color="theButton__cancel" @action="$emit('cancel', id)">отменить</the-button>
-        <the-button color="theButton__remove" @action="$emit('remove-task', id)">удалить</the-button>
+        <button class="btn btn__cancel mr-20" @click="$emit('cancel', id)">отменить</button>
+        <button class="btn btn__remove" @click="$emit('remove-task', id)">удалить</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import TheButton from '@/components/TheButton'
-
 export default {
   props: {
     id: {
@@ -45,12 +43,7 @@ export default {
       console.warn('No id in "cancel" emit')
       return false
     }
-  },
-
-  components: {
-    TheButton
   }
-
 }
 </script>
 
