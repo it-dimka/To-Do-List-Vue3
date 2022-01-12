@@ -4,7 +4,9 @@
   ></the-header>
 
   <div class="container">
-    <div class="card">
+    <the-loader v-if="loading"></the-loader>
+
+    <div class="card" v-else>
       <div class="card__title">
       <h2>{{ numberOfTasks ? 'Список задач:' : 'Список задач пуст'}}</h2>
       <span v-if="numberOfTasks" class="rate">{{ getZero(numberOfTasks) }}</span>
@@ -16,6 +18,7 @@
                 :title="task.title"
                 :description="task.description"
                 :is-open="task.isOpen"
+                :date="task.date"
                 @done-task="doneTask"
                 @add-description="addDescription"
       ></the-task>
@@ -44,34 +47,127 @@
 import TheHeader from '@/components/TheHeader'
 import TheTask from '@/components/TheTask'
 import TheDoneTask from '@/components/TheDoneTask'
+import TheLoader from '@/components/TheLoader'
+import axios from 'axios'
 
 export default {
   data () {
     return {
-      id: 1,
       taskList: [],
-      doneTaskList: []
+      doneTaskList: [],
+      loading: false
     }
   },
 
+  mounted () {
+    this.loadTaskList()
+    this.loadDoneTaskList()
+  },
+
   methods: {
-    createTask (task) {
+    async createTask (task) {
       const obj = {
-        id: Number(('1000' + this.id++)),
         title: task,
         description: '',
-        isOpen: false
+        isOpen: false,
+        date: new Date().toLocaleDateString('ru', { hour: 'numeric', minute: 'numeric', second: 'numeric' })
       }
-      this.taskList.push(obj)
+
+      try {
+        const response = await axios.post('https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/taskList.json', obj)
+        this.taskList.push({
+          id: response.data.name,
+          ...obj
+        })
+      } catch (e) {
+        console.log(e.message)
+      }
     },
 
-    doneTask (id) {
-      this.taskList.forEach((item, idx) => {
-        if (item.id === id) {
-          const task = this.taskList.splice(idx, 1)
-          this.doneTaskList.push(task[0])
+    async loadTaskList () {
+      try {
+        this.loading = true
+        const { data } = await axios.get('https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/taskList.json')
+        if (data) {
+          this.taskList = Object.keys(data).map(key => {
+            return {
+              id: key,
+              ...data[key]
+            }
+          })
         }
-      })
+        this.loading = false
+      } catch (e) {
+        this.loading = false
+        console.log(e.message)
+      }
+    },
+
+    async loadDoneTaskList () {
+      try {
+        const { data } = await axios.get('https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/doneTaskList.json')
+        if (data) {
+          this.doneTaskList = Object.keys(data).map(key => {
+            return {
+              id: key,
+              ...data[key]
+            }
+          })
+        }
+      } catch (e) {
+        console.log(e.message)
+      }
+    },
+
+    async doneTask (id) {
+      try {
+        await axios.delete(`https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/taskList/${id}.json`)
+        const task = this.taskList.find(item => item.id === id)
+        this.taskList = this.taskList.filter(task => task.id !== id)
+        delete task.id
+        const response = await axios.post('https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/doneTaskList.json', task)
+        this.doneTaskList.push({
+          id: response.data.name,
+          ...task
+        })
+      } catch (e) {
+        console.log(e.message)
+      }
+    },
+
+    async removeTask (id) {
+      try {
+        await axios.delete(`https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/doneTaskList/${id}.json`)
+        this.doneTaskList = this.doneTaskList.filter(task => task.id !== id)
+      } catch (e) {
+        console.log(e.message)
+      }
+    },
+
+    async cancelDone (id) {
+      try {
+        await axios.delete(`https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/doneTaskList/${id}.json`)
+        const task = this.doneTaskList.find(item => item.id === id)
+        this.doneTaskList = this.doneTaskList.filter(task => task.id !== id)
+        delete task.id
+        const response = await axios.post('https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/taskList.json', task)
+        this.taskList.push({
+          id: response.data.name,
+          ...task
+        })
+      } catch (e) {
+        console.log(e.message)
+      }
+    },
+
+    async addDescription (id, str) {
+      try {
+        const task = this.taskList.find(item => item.id === id)
+        task.description = str
+        await axios.put(`https://vue-my-todo-list-default-rtdb.europe-west1.firebasedatabase.app/taskList/${id}.json`, task)
+      } catch (e) {
+        console.log(e.message)
+      }
     },
 
     getZero (num) {
@@ -80,28 +176,6 @@ export default {
       } else {
         return num
       }
-    },
-
-    removeTask (id) {
-      this.doneTaskList.forEach((item, idx) => {
-        if (item.id === id) {
-          this.doneTaskList.splice(idx, 1)
-        }
-      })
-    },
-
-    cancelDone (id) {
-      this.doneTaskList.forEach((item, idx) => {
-        if (item.id === id) {
-          const task = this.doneTaskList.splice(idx, 1)
-          this.taskList.push(task[0])
-        }
-      })
-    },
-
-    addDescription (id, str) {
-      const task = this.taskList.find(item => item.id === id)
-      task.description = str
     }
   },
 
@@ -116,7 +190,7 @@ export default {
   },
 
   components: {
-    TheHeader, TheTask, TheDoneTask
+    TheHeader, TheTask, TheDoneTask, TheLoader
   }
 }
 </script>

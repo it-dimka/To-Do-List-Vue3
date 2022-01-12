@@ -7,12 +7,13 @@
     </div>
 
     <div class="task__text" v-if="isTaskOpen">
+      <p class="mb-5">Создано: {{ date }}</p>
       <input class="task__description" type="text"
              v-if="!isDescription"
              :placeholder="placeholderString"
              v-model="inputValue"
              @keydown.enter="addDescription(id, inputValue)">
-      <p v-else>{{ id }}: {{ isDescription }}</p>
+      <p class="bold" v-else>{{ isDescription }}</p>
     </div>
 
   </div>
@@ -22,7 +23,7 @@
 export default {
   props: {
     id: {
-      type: Number,
+      type: String,
       required: true
     },
 
@@ -46,6 +47,11 @@ export default {
     idx: {
       type: Number,
       required: true
+    },
+
+    date: {
+      type: String,
+      required: false
     }
   },
   emits: {
