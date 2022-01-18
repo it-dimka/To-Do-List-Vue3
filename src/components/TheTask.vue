@@ -11,7 +11,7 @@
       <input class="task__description" type="text"
              v-if="!isDescription"
              :placeholder="placeholderString"
-             v-model="inputValue"
+             v-model.trim="inputValue"
              @keydown.enter="addDescription(id, inputValue)">
       <p class="bold" v-else>{{ isDescription }}</p>
     </div>

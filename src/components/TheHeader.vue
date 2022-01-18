@@ -4,9 +4,11 @@
       <div class="theHeader__inner">
         <h1>{{ title }}</h1>
         <form @submit.prevent="createTask">
-          <input class="theHeader__input" :class="{theHeader__input_error: error.placeholder}"
+          <input class="theHeader__input"
+                 v-focus
+                 :class="{theHeader__input_error: error.placeholder}"
                  type="text" :placeholder="error.placeholder ? error.placeholder : placeHolderText"
-                 v-model="inputValue">
+                 v-model.trim="inputValue">
           <button class="btn btn__header">add new task</button>
         </form>
       </div>
@@ -17,6 +19,14 @@
 <script>
 
 export default {
+  directives: {
+    focus: {
+      mounted (el) {
+        el.focus()
+      }
+    }
+  },
+
   emits: {
     'create-task' (value) {
       if (value) {
